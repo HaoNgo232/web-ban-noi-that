@@ -1,4 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
 import {
   Injectable,
   CanActivate,
@@ -6,6 +8,7 @@ import {
   ForbiddenException,
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
+import { ROLES_KEY } from '../decorators/roles.decorator';
 
 /**
  * Roles Guard để kiểm tra role của user
@@ -13,16 +16,17 @@ import { Reflector } from '@nestjs/core';
  */
 @Injectable()
 export class RolesGuard implements CanActivate {
-  constructor(private reflector: Reflector) {}
+  constructor(private readonly reflector: Reflector) {}
 
   canActivate(context: ExecutionContext): boolean {
-    const requiredRoles = this.reflector.get<string[]>(
-      'roles',
-      context.getHandler(),
+    const requiredRoles = this.reflector.getAllAndOverride<string[]>(
+      ROLES_KEY,
+      [context.getHandler(), context.getClass()],
     );
 
-    if (!requiredRoles) {
-      return true; // Nếu không có @Roles() decorator, cho phép access
+    // Nếu không có @Roles() decorator, cho phép access
+    if (!requiredRoles || requiredRoles.length === 0) {
+      return true;
     }
 
     const request = context.switchToHttp().getRequest();
@@ -32,7 +36,8 @@ export class RolesGuard implements CanActivate {
       throw new ForbiddenException('User not found');
     }
 
-    if (!requiredRoles.includes(user.role)) {
+    const hasRole = requiredRoles.includes(user.role);
+    if (!hasRole) {
       throw new ForbiddenException(
         `This resource requires one of these roles: ${requiredRoles.join(', ')}`,
       );

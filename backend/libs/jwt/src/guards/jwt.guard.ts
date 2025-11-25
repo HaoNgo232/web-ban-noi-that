@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
-/* eslint-disable @typescript-eslint/no-unsafe-call */
 import {
   Injectable,
   CanActivate,
@@ -8,7 +7,8 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
-import { AppJwtService } from '@app/jwt';
+import { AppJwtService } from '../jwt.service';
+import { IS_PUBLIC_KEY } from '../decorators/public.decorator';
 
 /**
  * JWT Guard để kiểm tra token từ Authorization header
@@ -16,18 +16,19 @@ import { AppJwtService } from '@app/jwt';
  * Bỏ qua @Public() endpoints
  */
 @Injectable()
-export class JwtGuard implements CanActivate {
+export class JwtAuthGuard implements CanActivate {
   constructor(
     private readonly jwtService: AppJwtService,
-    private reflector: Reflector,
+    private readonly reflector: Reflector,
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     // Kiểm tra @Public() decorator
-    const isPublic = this.reflector.get<boolean>(
-      'isPublic',
+    const isPublic = this.reflector.getAllAndOverride<boolean>(IS_PUBLIC_KEY, [
       context.getHandler(),
-    );
+      context.getClass(),
+    ]);
+
     if (isPublic) {
       return true;
     }
@@ -50,16 +51,16 @@ export class JwtGuard implements CanActivate {
   }
 
   private extractToken(request: any): string | null {
-    const authHeader = request.headers.authorization;
-    if (!authHeader) {
+    const authHeader = request.headers?.authorization;
+    if (!authHeader || typeof authHeader !== 'string') {
       return null;
     }
 
     const [scheme, token] = authHeader.split(' ');
-    if (scheme !== 'Bearer') {
+    if (scheme !== 'Bearer' || !token) {
       return null;
     }
 
-    return token as string | null;
+    return token;
   }
 }

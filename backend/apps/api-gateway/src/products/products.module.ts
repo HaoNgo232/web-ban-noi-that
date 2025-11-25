@@ -1,9 +1,11 @@
 import { Module } from '@nestjs/common';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 import { ProductsController } from './products.controller';
+import { AppJwtModule } from '@app/jwt';
 
 @Module({
   imports: [
+    AppJwtModule,
     ClientsModule.register([
       {
         name: 'PRODUCT_SERVICE',

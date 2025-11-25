@@ -5,13 +5,15 @@ import {
   Inject,
   HttpCode,
   HttpStatus,
+  UseGuards,
 } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { BaseGatewayController } from '../base.controller';
 import { LoginDto, RefreshTokenDto, AUTH_MESSAGE_PATTERNS } from '@app/dto';
-import { Public } from '../auth/public.decorator';
+import { Public, JwtAuthGuard } from '@app/jwt';
 
 @Controller('auth')
+@UseGuards(JwtAuthGuard)
 export class AuthController extends BaseGatewayController {
   constructor(@Inject('USERS_SERVICE') protected readonly client: ClientProxy) {
     super(client);

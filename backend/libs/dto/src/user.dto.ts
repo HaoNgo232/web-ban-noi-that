@@ -10,6 +10,7 @@ import {
   Min,
   Matches,
 } from 'class-validator';
+import { Type } from 'class-transformer';
 import { PartialType, OmitType } from '@nestjs/mapped-types';
 
 // ==================== ENUMS ====================
@@ -150,11 +151,13 @@ export class UserResponseDto {
  */
 export class GetUsersQueryDto {
   @IsOptional()
+  @Type(() => Number)
   @IsNumber()
   @Min(1)
   page?: number = 1;
 
   @IsOptional()
+  @Type(() => Number)
   @IsNumber()
   @Min(1)
   limit?: number = 20;
