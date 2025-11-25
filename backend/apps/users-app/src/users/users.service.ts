@@ -1,9 +1,5 @@
-import {
-  Injectable,
-  NotFoundException,
-  ConflictException,
-  Logger,
-} from '@nestjs/common';
+import { Injectable, Logger, HttpStatus } from '@nestjs/common';
+import { RpcException } from '@nestjs/microservices';
 import { PrismaService } from '@app/prisma';
 import {
   CreateUserDto,
@@ -32,7 +28,10 @@ export class UsersService {
     });
 
     if (existingUser) {
-      throw new ConflictException('Email đã được sử dụng');
+      throw new RpcException({
+        statusCode: HttpStatus.CONFLICT,
+        message: 'Email đã được sử dụng',
+      });
     }
 
     const hashedPassword = await bcrypt.hash(
@@ -104,7 +103,10 @@ export class UsersService {
     });
 
     if (!user) {
-      throw new NotFoundException(`User với ID ${id} không tồn tại`);
+      throw new RpcException({
+        statusCode: HttpStatus.NOT_FOUND,
+        message: `User với ID ${id} không tồn tại`,
+      });
     }
 
     return this.mapToUserResponse(user);
@@ -119,7 +121,10 @@ export class UsersService {
     });
 
     if (!user) {
-      throw new NotFoundException(`User với email ${email} không tồn tại`);
+      throw new RpcException({
+        statusCode: HttpStatus.NOT_FOUND,
+        message: `User với email ${email} không tồn tại`,
+      });
     }
 
     return user; // Trả về cả password để xác thực

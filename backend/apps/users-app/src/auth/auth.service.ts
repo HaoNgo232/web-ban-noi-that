@@ -1,4 +1,5 @@
-import { Injectable, UnauthorizedException, Logger } from '@nestjs/common';
+import { Injectable, Logger, HttpStatus } from '@nestjs/common';
+import { RpcException } from '@nestjs/microservices';
 import { AppJwtService } from '@app/jwt';
 import { PrismaService } from '@app/prisma';
 import {
@@ -8,8 +9,8 @@ import {
   RefreshTokenResponseDto,
   AppJwtPayload,
 } from '@app/dto';
-import { UsersService } from '../src/users/users.service';
 import * as bcrypt from 'bcrypt';
+import { UsersService } from '../users/users.service';
 
 @Injectable()
 export class AuthService {
@@ -33,12 +34,18 @@ export class AuthService {
     // Kiểm tra password
     const isPasswordValid = await bcrypt.compare(password, user.password);
     if (!isPasswordValid) {
-      throw new UnauthorizedException('Email hoặc password không đúng');
+      throw new RpcException({
+        statusCode: HttpStatus.UNAUTHORIZED,
+        message: 'Email hoặc password không đúng',
+      });
     }
 
     // Kiểm tra user status
     if (user.status !== 'ACTIVE') {
-      throw new UnauthorizedException('User account không hoạt động');
+      throw new RpcException({
+        statusCode: HttpStatus.UNAUTHORIZED,
+        message: 'User account không hoạt động',
+      });
     }
 
     // Tạo JWT payload

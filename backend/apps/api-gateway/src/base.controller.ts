@@ -109,7 +109,17 @@ export abstract class BaseGatewayController {
       );
     }
 
-    // Phân tích lỗi từ microservice (RPC error)
+    // Phân tích RPC error từ microservice
+    // RpcException wrap error trong { error: { message, statusCode } }
+    const rpcErrorWrapper = (error as any)?.error;
+    if (this.isRpcError(rpcErrorWrapper)) {
+      return new HttpException(
+        rpcErrorWrapper.message || 'Service communication failed',
+        rpcErrorWrapper.statusCode || HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+
+    // Direct RPC error (message + statusCode)
     if (this.isRpcError(error)) {
       return new HttpException(
         error.message || 'Service communication failed',

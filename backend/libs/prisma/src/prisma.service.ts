@@ -19,7 +19,7 @@ export class PrismaService
   constructor() {
     const connectionString =
       process.env.DATABASE_URL ||
-      'postgresql://postgres:postgres@localhost:5432/furniture_db?schema=public';
+      'postgresql://furniture:password@localhost:5432/furniture_db?schema=public';
 
     const pool = new Pool({ connectionString });
     const adapter = new PrismaPg(pool);

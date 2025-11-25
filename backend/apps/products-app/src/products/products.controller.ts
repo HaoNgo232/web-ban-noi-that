@@ -87,7 +87,7 @@ export class ProductsController {
   }
 
   /**
-   * Cập nhật số lượng tồn kho
+   * Cập nhật tồn kho
    */
   @MessagePattern(PRODUCT_PATTERNS.UPDATE_STOCK)
   async updateStock(

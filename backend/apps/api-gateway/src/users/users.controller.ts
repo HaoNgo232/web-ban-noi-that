@@ -17,6 +17,7 @@ import {
   GetUsersQueryDto,
   USER_MESSAGE_PATTERNS,
 } from '@app/dto';
+import { Roles } from '../auth/roles.decorator';
 
 @Controller('users')
 export class UsersController extends BaseGatewayController {
@@ -25,25 +26,27 @@ export class UsersController extends BaseGatewayController {
   }
 
   /**
-   * Tạo user mới
+   * Tạo user mới (admin/staff only)
    * POST /users
    */
+  @Roles('admin', 'staff')
   @Post()
   create(@Body() createUserDto: CreateUserDto) {
     return this.send(USER_MESSAGE_PATTERNS.CREATE, createUserDto);
   }
 
   /**
-   * Lấy danh sách users
+   * Lấy danh sách users (admin/staff only)
    * GET /users
    */
+  @Roles('admin', 'staff')
   @Get()
   findAll(@Query() query: GetUsersQueryDto) {
     return this.send(USER_MESSAGE_PATTERNS.FIND_ALL, query);
   }
 
   /**
-   * Lấy user theo ID
+   * Lấy user theo ID (authenticated)
    * GET /users/:id
    */
   @Get(':id')
@@ -52,7 +55,7 @@ export class UsersController extends BaseGatewayController {
   }
 
   /**
-   * Cập nhật user
+   * Cập nhật user (admin/staff hoặc chính user đó)
    * PATCH /users/:id
    */
   @Patch(':id')
@@ -61,9 +64,10 @@ export class UsersController extends BaseGatewayController {
   }
 
   /**
-   * Xóa user (soft delete)
+   * Xóa user (admin only)
    * DELETE /users/:id
    */
+  @Roles('admin')
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.send(USER_MESSAGE_PATTERNS.REMOVE, id);

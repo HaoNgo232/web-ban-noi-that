@@ -9,6 +9,7 @@ import {
 import { ClientProxy } from '@nestjs/microservices';
 import { BaseGatewayController } from '../base.controller';
 import { LoginDto, RefreshTokenDto, AUTH_MESSAGE_PATTERNS } from '@app/dto';
+import { Public } from '../auth/public.decorator';
 
 @Controller('auth')
 export class AuthController extends BaseGatewayController {
@@ -20,6 +21,7 @@ export class AuthController extends BaseGatewayController {
    * Login
    * POST /auth/login
    */
+  @Public()
   @Post('login')
   @HttpCode(HttpStatus.OK)
   login(@Body() loginDto: LoginDto) {
@@ -30,6 +32,7 @@ export class AuthController extends BaseGatewayController {
    * Refresh access token
    * POST /auth/refresh
    */
+  @Public()
   @Post('refresh')
   @HttpCode(HttpStatus.OK)
   refreshToken(@Body() refreshTokenDto: RefreshTokenDto) {
