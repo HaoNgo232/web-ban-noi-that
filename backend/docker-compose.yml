@@ -1,7 +1,11 @@
 # docker-compose.yml
-version: '3.8'
+# Thay DOCKER_USERNAME bằng username Docker Hub của bạn
+# hoặc set biến môi trường: export DOCKER_USERNAME=your-username
 
 services:
+  # =============================================================================
+  # Database
+  # =============================================================================
   furniture_db:
     image: postgres:16-alpine
     container_name: furniture_db
@@ -15,10 +19,126 @@ services:
     volumes:
       - furniture_db_data:/var/lib/postgresql/data
     healthcheck:
-      test: ['CMD-SHELL', 'pg_isready -U user -d furniture_db']
+      test: ['CMD-SHELL', 'pg_isready -U furniture -d furniture_db']
       interval: 10s
       timeout: 5s
       retries: 5
+    networks:
+      - furniture_network
 
+  # =============================================================================
+  # API Gateway
+  # =============================================================================
+  api-gateway:
+    image: ${DOCKER_USERNAME:-haongo123}/furniture-api-gateway:${TAG:-latest}
+    build:
+      context: .
+      dockerfile: apps/api-gateway/Dockerfile
+    container_name: furniture_api_gateway
+    restart: always
+    init: true
+    ports:
+      - '3000:3000'
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      - USERS_SERVICE_HOST=users-app
+      - USERS_SERVICE_PORT=3002
+      - PRODUCTS_SERVICE_HOST=products-app
+      - PRODUCTS_SERVICE_PORT=3001
+      - JWT_SECRET=${JWT_SECRET}
+      - JWT_REFRESH_SECRET=${JWT_REFRESH_SECRET}
+    depends_on:
+      users-app:
+        condition: service_healthy
+      products-app:
+        condition: service_healthy
+    healthcheck:
+      test:
+        [
+          'CMD',
+          'wget',
+          '--no-verbose',
+          '--tries=1',
+          '--spider',
+          'http://localhost:3000/health',
+        ]
+      interval: 30s
+      timeout: 10s
+      start_period: 10s
+      retries: 3
+    networks:
+      - furniture_network
+
+  # =============================================================================
+  # Users Microservice
+  # =============================================================================
+  users-app:
+    image: ${DOCKER_USERNAME:-haongo123}/furniture-users-app:${TAG:-latest}
+    build:
+      context: .
+      dockerfile: apps/users-app/Dockerfile
+    container_name: furniture_users_service
+    restart: always
+    init: true
+    ports:
+      - '3002:3002'
+    environment:
+      - NODE_ENV=production
+      - PORT=3002
+      - DATABASE_URL=postgresql://furniture:password@furniture_db:5432/furniture_db
+      - JWT_SECRET=${JWT_SECRET}
+      - JWT_REFRESH_SECRET=${JWT_REFRESH_SECRET}
+    depends_on:
+      furniture_db:
+        condition: service_healthy
+    healthcheck:
+      test: ['CMD', 'nc', '-z', 'localhost', '3002']
+      interval: 30s
+      timeout: 10s
+      start_period: 10s
+      retries: 3
+    networks:
+      - furniture_network
+
+  # =============================================================================
+  # Products Microservice
+  # =============================================================================
+  products-app:
+    image: ${DOCKER_USERNAME:-haongo123}/furniture-products-app:${TAG:-latest}
+    build:
+      context: .
+      dockerfile: apps/products-app/Dockerfile
+    container_name: furniture_products_service
+    restart: always
+    init: true
+    ports:
+      - '3001:3001'
+    environment:
+      - NODE_ENV=production
+      - PORT=3001
+      - DATABASE_URL=postgresql://furniture:password@furniture_db:5432/furniture_db
+    depends_on:
+      furniture_db:
+        condition: service_healthy
+    healthcheck:
+      test: ['CMD', 'nc', '-z', 'localhost', '3001']
+      interval: 30s
+      timeout: 10s
+      start_period: 10s
+      retries: 3
+    networks:
+      - furniture_network
+
+# =============================================================================
+# Networks
+# =============================================================================
+networks:
+  furniture_network:
+    driver: bridge
+
+# =============================================================================
+# Volumes
+# =============================================================================
 volumes:
   furniture_db_data:
