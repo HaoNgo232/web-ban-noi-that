@@ -21,13 +21,11 @@ export class PrismaService
       process.env.DATABASE_URL ||
       'postgresql://postgres:postgres@localhost:5432/furniture_db?schema=public';
 
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call
     const pool = new Pool({ connectionString });
     const adapter = new PrismaPg(pool);
 
     super({ adapter });
 
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     this.pool = pool;
   }
 
@@ -46,7 +44,6 @@ export class PrismaService
   async onModuleDestroy(): Promise<void> {
     await this.$disconnect();
     if (this.pool) {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
       await this.pool.end();
     }
     this.logger.log('Database connection closed');

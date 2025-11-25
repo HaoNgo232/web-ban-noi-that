@@ -16,4 +16,4 @@ async function bootstrap() {
   await app.listen();
   console.log('Products microservice is running on TCP port 3001');
 }
-bootstrap();
+void bootstrap();

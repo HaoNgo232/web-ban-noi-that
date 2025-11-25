@@ -28,6 +28,15 @@
         "tsConfigPath": "libs/dto/tsconfig.lib.json"
       }
     },
+    "jwt": {
+      "type": "library",
+      "root": "libs/jwt",
+      "entryFile": "index",
+      "sourceRoot": "libs/jwt/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/jwt/tsconfig.lib.json"
+      }
+    },
     "lib": {
       "type": "library",
       "root": "libs/lib",
@@ -53,6 +62,15 @@
       "sourceRoot": "apps/products-app/src",
       "compilerOptions": {
         "tsConfigPath": "apps/products-app/tsconfig.app.json"
+      }
+    },
+    "users-app": {
+      "type": "application",
+      "root": "apps/users-app",
+      "entryFile": "main",
+      "sourceRoot": "apps/users-app/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/users-app/tsconfig.app.json"
       }
     }
   }

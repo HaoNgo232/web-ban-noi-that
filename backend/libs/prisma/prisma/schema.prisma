@@ -50,3 +50,36 @@ model Product {
   @@index([name])
   @@map("products")
 }
+
+enum UserRole {
+  ADMIN
+  CUSTOMER
+  STAFF
+}
+
+enum UserStatus {
+  ACTIVE
+  INACTIVE
+  BANNED
+}
+
+model User {
+  id          String     @id @default(uuid())
+  email       String     @unique @db.VarChar(255)
+  password    String     @db.VarChar(255)
+  firstName   String     @db.VarChar(100)
+  lastName    String     @db.VarChar(100)
+  phone       String?    @db.VarChar(20)
+  avatar      String?    @db.VarChar(500)
+  address     String?    @db.Text
+  role        UserRole   @default(CUSTOMER)
+  status      UserStatus @default(ACTIVE)
+  lastLoginAt DateTime?
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  @@index([email])
+  @@index([role])
+  @@index([status])
+  @@map("users")
+}

@@ -9,4 +9,4 @@ async function bootstrap(): Promise<void> {
   console.log(`API Gateway is running on: ${await app.getUrl()}`);
 }
 
-bootstrap();
+void bootstrap();
