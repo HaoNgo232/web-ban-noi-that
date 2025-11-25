@@ -265,7 +265,7 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\n  \"email\": \"newuser@example.com\",\n  \"password\": \"Password@123\",\n  \"firstName\": \"New\",\n  \"lastName\": \"User\",\n  \"phone\": \"0909123456\",\n  \"address\": \"123 Nguyen Hue, Quan 1, TP.HCM\",\n  \"role\": \"CUSTOMER\"\n}"
+                            "raw": "{\n  \"email\": \"newuser@example.com\",\n  \"password\": \"Password@123\",\n  \"firstName\": \"New\",\n  \"lastName\": \"User\",\n  \"phone\": \"0909123456\",\n  \"address\": \"123 Nguyen Hue, Quan 1, TP.HCM\"\n}"
                         },
                         "url": {
                             "raw": "{{baseUrl}}/users",
@@ -276,7 +276,7 @@
                                 "users"
                             ]
                         },
-                        "description": "Tao user moi (ADMIN only)"
+                        "description": "Tao user moi"
                     },
                     "response": []
                 },
@@ -310,43 +310,6 @@
                             ]
                         },
                         "description": "Lay danh sach tat ca users"
-                    },
-                    "response": []
-                },
-                {
-                    "name": "Get All Users - Filter by Role",
-                    "request": {
-                        "method": "GET",
-                        "header": [
-                            {
-                                "key": "Authorization",
-                                "value": "Bearer {{accessToken}}"
-                            }
-                        ],
-                        "url": {
-                            "raw": "{{baseUrl}}/users?page=1&limit=20&role=CUSTOMER",
-                            "host": [
-                                "{{baseUrl}}"
-                            ],
-                            "path": [
-                                "users"
-                            ],
-                            "query": [
-                                {
-                                    "key": "page",
-                                    "value": "1"
-                                },
-                                {
-                                    "key": "limit",
-                                    "value": "20"
-                                },
-                                {
-                                    "key": "role",
-                                    "value": "CUSTOMER"
-                                }
-                            ]
-                        },
-                        "description": "Lay danh sach users theo role (ADMIN, CUSTOMER, STAFF)"
                     },
                     "response": []
                 },
