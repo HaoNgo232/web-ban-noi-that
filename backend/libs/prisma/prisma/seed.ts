@@ -1,7 +1,19 @@
+import * as dotenv from 'dotenv';
+import * as path from 'path';
 import { PrismaClient } from '../src/generated/prisma';
+import { PrismaPg } from '@prisma/adapter-pg';
+import { Pool } from 'pg';
 import * as bcrypt from 'bcrypt';
 
-const prisma = new PrismaClient();
+// Load environment variables
+const envPath = path.resolve(__dirname, '../../../.env');
+dotenv.config({ path: envPath });
+
+const connectionString = process.env.DATABASE_URL;
+
+const pool = new Pool({ connectionString });
+const adapter = new PrismaPg(pool);
+const prisma = new PrismaClient({ adapter });
 
 const SALT_ROUNDS = 10;
 
@@ -420,6 +432,9 @@ async function main(): Promise<void> {
   } catch (error) {
     console.error('❌ Error seeding database:', error);
     throw error;
+  } finally {
+    await prisma.$disconnect();
+    await pool.end();
   }
 }
 

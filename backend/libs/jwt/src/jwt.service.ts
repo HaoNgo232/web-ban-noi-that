@@ -1,4 +1,9 @@
-import { Injectable, UnauthorizedException, Logger } from '@nestjs/common';
+import {
+  Injectable,
+  Optional,
+  UnauthorizedException,
+  Logger,
+} from '@nestjs/common';
 import { SignJWT, jwtVerify } from 'jose';
 import { TextEncoder } from 'node:util';
 import type { AppJwtPayload } from '@app/dto';
@@ -40,7 +45,7 @@ export class AppJwtService {
   private readonly accessTokenSecret: Uint8Array;
   private readonly refreshTokenSecret: Uint8Array;
 
-  constructor(config?: Partial<JwtConfig>) {
+  constructor(@Optional() config?: Partial<JwtConfig>) {
     this.config = {
       secret:
         config?.secret || process.env.JWT_SECRET || 'your-super-secret-key',
