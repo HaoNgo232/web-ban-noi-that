@@ -33,7 +33,9 @@ export class ProductsService {
         stock: createProductDto.stock,
         category: createProductDto.category as ProductCategory,
         material: createProductDto.material,
-        images: createProductDto.images ?? [],
+        images: createProductDto.images
+          ? JSON.stringify(createProductDto.images)
+          : null,
         discountPercentage: createProductDto.discountPercentage ?? 0,
         status: ProductStatus.ACTIVE,
       },
@@ -71,8 +73,8 @@ export class ProductsService {
 
     if (search) {
       where.OR = [
-        { name: { contains: search, mode: 'insensitive' } },
-        { description: { contains: search, mode: 'insensitive' } },
+        { name: { contains: search } },
+        { description: { contains: search } },
       ];
     }
 
@@ -170,7 +172,9 @@ export class ProductsService {
       updateData.material = updateProductDto.material;
     }
     if (updateProductDto.images !== undefined) {
-      updateData.images = updateProductDto.images;
+      updateData.images = updateProductDto.images
+        ? JSON.stringify(updateProductDto.images)
+        : null;
     }
     if (updateProductDto.discountPercentage !== undefined) {
       updateData.discountPercentage = updateProductDto.discountPercentage;
@@ -260,7 +264,7 @@ export class ProductsService {
       status: product.status as GetProductDto['status'],
       category: product.category as GetProductDto['category'],
       material: product.material ?? undefined,
-      images: product.images,
+      images: product.images ? JSON.parse(product.images) : [],
       discountPercentage: product.discountPercentage?.toNumber(),
       createdAt: product.createdAt,
       updatedAt: product.updatedAt,

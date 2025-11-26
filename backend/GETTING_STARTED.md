@@ -2,12 +2,155 @@
 
 ## 📋 Mục lục
 
-1. [Chuẩn bị môi trường](#chuẩn-bị-môi-trường)
-2. [Cài đặt phát triển (Development)](#cài-đặt-phát-triển)
-3. [Chạy bằng Docker](#chạy-bằng-docker)
+1. [🚀 Chạy bằng Docker (Nhanh nhất)](#-chạy-bằng-docker-nhanh-nhất)
+2. [Chuẩn bị môi trường](#chuẩn-bị-môi-trường)
+3. [Cài đặt phát triển (Development)](#cài-đặt-phát-triển)
 4. [Seed Data](#seed-data)
 5. [API Documentation](#api-documentation)
 6. [Troubleshooting](#troubleshooting)
+
+---
+
+## 🚀 Chạy bằng Docker (Nhanh nhất)
+
+### ⚡ Cách 1: Docker Compose (Khuyên nghị)
+
+**Chạy tất cả services (Database + 3 Microservices) với một lệnh:**
+
+```bash
+cd /media/hao/Data/Apps/web-ban-noi-that/backend
+docker-compose up -d
+```
+
+**Kiểm tra services đang chạy:**
+
+```bash
+# Xem tất cả containers
+docker ps
+
+# Test API Gateway
+curl http://localhost:3000/health
+```
+
+**Dừng services:**
+
+```bash
+docker-compose down
+
+# Xóa database volumes (xóa tất cả data)
+docker-compose down -v
+```
+
+---
+
+### 🔧 Cách 2: Docker Run (Manual - từng container)
+
+#### 1️⃣ Chạy MySQL Database
+
+```bash
+docker run -d \
+  --name furniture_db \
+  --restart always \
+  --network host \
+  -e MYSQL_DATABASE=furniture_db \
+  -e MYSQL_USER=furniture \
+  -e MYSQL_PASSWORD=password \
+  -e MYSQL_ROOT_PASSWORD=rootpassword \
+  -p 3306:3306 \
+  -v furniture_db_data:/var/lib/mysql \
+  mysql:8.0
+
+# Chờ database ready (khoảng 10-15 giây)
+sleep 15
+```
+
+#### 2️⃣ Chạy Users Microservice
+
+```bash
+docker run -d \
+  --name furniture_users_service \
+  --restart always \
+  -e NODE_ENV=production \
+  -e PORT=3002 \
+  -e DATABASE_URL="mysql://furniture:password@localhost:3306/furniture_db" \
+  -e JWT_SECRET=your-jwt-secret \
+  -e JWT_REFRESH_SECRET=your-jwt-refresh-secret \
+  -p 3002:3002 \
+  --network host \
+  haongo123/furniture-users-app:latest
+```
+
+#### 3️⃣ Chạy Products Microservice
+
+```bash
+docker run -d \
+  --name furniture_products_service \
+  --restart always \
+  -e NODE_ENV=production \
+  -e PORT=3001 \
+  -e DATABASE_URL="mysql://furniture:password@localhost:3306/furniture_db" \
+  -p 3001:3001 \
+  --network host \
+  haongo123/furniture-products-app:latest
+```
+
+#### 4️⃣ Chạy API Gateway
+
+```bash
+docker run -d \
+  --name furniture_api_gateway \
+  --restart always \
+  -e NODE_ENV=production \
+  -e PORT=3000 \
+  -e USERS_SERVICE_HOST=localhost \
+  -e USERS_SERVICE_PORT=3002 \
+  -e PRODUCTS_SERVICE_HOST=localhost \
+  -e PRODUCTS_SERVICE_PORT=3001 \
+  -e JWT_SECRET=your-jwt-secret \
+  -e JWT_REFRESH_SECRET=your-jwt-refresh-secret \
+  -p 3000:3000 \
+  --network host \
+  haongo123/furniture-api-gateway:latest
+```
+
+**Kiểm tra logs:**
+
+```bash
+docker logs -f furniture_api_gateway
+docker logs -f furniture_users_service
+docker logs -f furniture_products_service
+```
+
+**Dừng containers:**
+
+```bash
+docker stop furniture_api_gateway
+docker stop furniture_users_service
+docker stop furniture_products_service
+docker stop furniture_db
+
+# Xóa containers
+docker rm furniture_api_gateway
+docker rm furniture_users_service
+docker rm furniture_products_service
+docker rm furniture_db
+
+# Xóa volume
+docker volume rm furniture_db_data
+```
+
+---
+
+### 📊 So sánh 2 cách
+
+| Tiêu chí          | Docker Compose      | Docker Run    |
+| ----------------- | ------------------- | ------------- |
+| **Dễ dùng**       | ✅ Một lệnh         | ❌ 4 lệnh     |
+| **Tự động setup** | ✅ Network, volumes | ❌ Manual     |
+| **Bảo trì**       | ✅ Config file      | ❌ Script dài |
+| **Mục đích**      | 👍 Production-ready | Học tập/debug |
+
+**Khuyên cáo:** Dùng **Docker Compose** cho dễ quản lý! ✨
 
 ---
 
@@ -186,68 +329,23 @@ npm run db:reset
 
 ---
 
-## 🐳 Chạy bằng Docker
+## 🐳 Build Multi-Platform Images
 
-### Cách 1: Docker Compose (Toàn bộ stack)
+### Build lại images (tùy chọn)
 
 ```bash
-# Build lại images
+# Build local
 docker-compose build
 
-# Chạy tất cả services
-docker-compose up
+# Hoặc build multi-platform (linux/amd64 + linux/arm64)
+cd /media/hao/Data/Apps/web-ban-noi-that/backend
+docker buildx bake
 
-# Chạy ở background
-docker-compose up -d
-
-# Xem logs
-docker-compose logs -f [service-name]
-
-# Dừng services
-docker-compose down
-
-# Xóa volumes (database)
-docker-compose down -v
+# Push lên Docker Hub (cần: docker login)
+docker buildx bake --push
 ```
 
-### Cách 2: Build Images riêng
-
-```bash
-# Build từng image
-docker build -f apps/api-gateway/Dockerfile -t furniture-api-gateway .
-docker build -f apps/users-app/Dockerfile -t furniture-users-app .
-docker build -f apps/products-app/Dockerfile -t furniture-products-app .
-
-# Chạy từng container
-docker run -d \
-  --name furniture_db \
-  -e POSTGRES_DB=furniture_db \
-  -e POSTGRES_USER=furniture \
-  -e POSTGRES_PASSWORD=password \
-  -p 5432:5432 \
-  postgres:16-alpine
-
-docker run -d \
-  --name furniture_api_gateway \
-  -p 3000:3000 \
-  -e DATABASE_URL=postgresql://furniture:password@host.docker.internal:5432/furniture_db \
-  -e JWT_SECRET=your-secret \
-  furniture-api-gateway
-```
-
-### Cách 3: Multi-platform Build (macOS M-series + Windows)
-
-```bash
-# Setup builder
-docker buildx create --name mybuilder --use
-
-# Build cho multiple platforms
-docker buildx build \
-  --platform linux/amd64,linux/arm64 \
-  -f apps/api-gateway/Dockerfile \
-  -t furniture-api-gateway:latest \
-  --push .
-```
+**Lưu ý:** Images đã được build và push lên Docker Hub (`haongo123/furniture-*`), nên bạn có thể dùng ngay!
 
 ---
 

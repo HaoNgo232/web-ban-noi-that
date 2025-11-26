@@ -7,19 +7,20 @@ services:
   # Database
   # =============================================================================
   furniture_db:
-    image: postgres:16-alpine
+    image: mysql:8.0
     container_name: furniture_db
     restart: always
     environment:
-      POSTGRES_DB: furniture_db
-      POSTGRES_USER: furniture
-      POSTGRES_PASSWORD: password
+      MYSQL_DATABASE: furniture_db
+      MYSQL_USER: furniture
+      MYSQL_PASSWORD: password
+      MYSQL_ROOT_PASSWORD: rootpassword
     ports:
-      - '5432:5432'
+      - '3306:3306'
     volumes:
-      - furniture_db_data:/var/lib/postgresql/data
+      - furniture_db_data:/var/lib/mysql
     healthcheck:
-      test: ['CMD-SHELL', 'pg_isready -U furniture -d furniture_db']
+      test: ['CMD', 'mysqladmin', 'ping', '-h', 'localhost']
       interval: 10s
       timeout: 5s
       retries: 5
@@ -86,7 +87,7 @@ services:
     environment:
       - NODE_ENV=production
       - PORT=3002
-      - DATABASE_URL=postgresql://furniture:password@furniture_db:5432/furniture_db
+      - DATABASE_URL=mysql://furniture:password@furniture_db:3306/furniture_db
       - JWT_SECRET=${JWT_SECRET}
       - JWT_REFRESH_SECRET=${JWT_REFRESH_SECRET}
     depends_on:
@@ -117,7 +118,7 @@ services:
     environment:
       - NODE_ENV=production
       - PORT=3001
-      - DATABASE_URL=postgresql://furniture:password@furniture_db:5432/furniture_db
+      - DATABASE_URL=mysql://furniture:password@furniture_db:3306/furniture_db
     depends_on:
       furniture_db:
         condition: service_healthy

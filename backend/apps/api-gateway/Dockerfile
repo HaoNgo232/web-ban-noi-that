@@ -1,11 +1,11 @@
-# syntax=docker/dockerfile:1
+# syntax=docker/dockerfile:1.4
 # =============================================================================
 # API Gateway Dockerfile
 # Works on: Linux (AMD64), macOS (Intel/M-series)
 # =============================================================================
 
 # Stage 1: Dependencies
-FROM node:20-alpine AS deps
+FROM --platform=$BUILDPLATFORM node:20-alpine AS deps
 
 WORKDIR /app
 
@@ -13,7 +13,7 @@ COPY package*.json ./
 RUN npm ci --only=production && npm cache clean --force
 
 # Stage 2: Builder
-FROM node:20-alpine AS builder
+FROM --platform=$BUILDPLATFORM node:20-alpine AS builder
 
 WORKDIR /app
 

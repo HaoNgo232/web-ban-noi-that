@@ -1,19 +1,18 @@
 import * as dotenv from 'dotenv';
 import * as path from 'path';
-import { PrismaClient } from '../src/generated/prisma';
-import { PrismaPg } from '@prisma/adapter-pg';
-import { Pool } from 'pg';
 import * as bcrypt from 'bcrypt';
 
-// Load environment variables
-const envPath = path.resolve(__dirname, '../../../.env');
-dotenv.config({ path: envPath });
+// Load environment variables FIRST
+dotenv.config({ path: path.resolve(__dirname, '../../../.env') });
 
-const connectionString = process.env.DATABASE_URL;
+// Verify DATABASE_URL is set
+if (!process.env.DATABASE_URL) {
+  throw new Error('DATABASE_URL environment variable is not set');
+}
 
-const pool = new Pool({ connectionString });
-const adapter = new PrismaPg(pool);
-const prisma = new PrismaClient({ adapter });
+import { PrismaClient } from '../src/generated/prisma';
+
+const prisma = new PrismaClient();
 
 const SALT_ROUNDS = 10;
 
@@ -406,8 +405,14 @@ async function seedProducts(): Promise<void> {
   console.log('🌱 Seeding products...');
 
   for (const productData of productsData) {
+    // Convert images array to JSON string for MySQL
+    const dataToInsert = {
+      ...productData,
+      images: JSON.stringify(productData.images),
+    };
+
     const product = await prisma.product.create({
-      data: productData,
+      data: dataToInsert,
     });
 
     console.log(`  ✅ Created product: ${product.name}`);
@@ -434,7 +439,6 @@ async function main(): Promise<void> {
     throw error;
   } finally {
     await prisma.$disconnect();
-    await pool.end();
   }
 }
 
