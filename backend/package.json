@@ -19,6 +19,7 @@
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./apps/api-gateway/test/jest-e2e.json",
+    "db:gen": "prisma generate --schema=libs/prisma/prisma/schema.prisma",
     "db:push": "prisma db push --schema=libs/prisma/prisma/schema.prisma --config=libs/prisma/prisma.config.ts",
     "db:migrate": "prisma migrate dev --schema=libs/prisma/prisma/schema.prisma --config=libs/prisma/prisma.config.ts",
     "db:seed": "ts-node libs/prisma/prisma/seed.ts",

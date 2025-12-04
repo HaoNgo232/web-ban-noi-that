@@ -6,36 +6,36 @@ services:
   # =============================================================================
   # Database
   # =============================================================================
-  furniture_db:
+  web-ban-noi-that-db:
     image: mysql:8.0
-    container_name: furniture_db
+    container_name: web-ban-noi-that-db
     restart: always
     environment:
-      MYSQL_DATABASE: furniture_db
-      MYSQL_USER: furniture
-      MYSQL_PASSWORD: password
+      MYSQL_DATABASE: web_db
+      MYSQL_USER: web_user
+      MYSQL_PASSWORD: web_password
       MYSQL_ROOT_PASSWORD: rootpassword
     ports:
       - '3306:3306'
     volumes:
-      - furniture_db_data:/var/lib/mysql
+      - web-ban-noi-that-db-data:/var/lib/mysql
     healthcheck:
       test: ['CMD', 'mysqladmin', 'ping', '-h', 'localhost']
       interval: 10s
       timeout: 5s
       retries: 5
     networks:
-      - furniture_network
+      - web-ban-noi-that-network
 
   # =============================================================================
   # API Gateway
   # =============================================================================
   api-gateway:
-    image: ${DOCKER_USERNAME:-haongo123}/furniture-api-gateway:${TAG:-latest}
+    image: ${DOCKER_USERNAME:-haongo123}/web-ban-noi-that-api-gateway:${TAG:-latest}
     build:
       context: .
       dockerfile: apps/api-gateway/Dockerfile
-    container_name: furniture_api_gateway
+    container_name: web-ban-noi-that-api-gateway
     restart: always
     init: true
     ports:
@@ -69,17 +69,17 @@ services:
       start_period: 10s
       retries: 3
     networks:
-      - furniture_network
+      - web-ban-noi-that-network
 
   # =============================================================================
   # Users Microservice
   # =============================================================================
   users-app:
-    image: ${DOCKER_USERNAME:-haongo123}/furniture-users-app:${TAG:-latest}
+    image: ${DOCKER_USERNAME:-haongo123}/web-ban-noi-that-users-service:${TAG:-latest}
     build:
       context: .
       dockerfile: apps/users-app/Dockerfile
-    container_name: furniture_users_service
+    container_name: web-ban-noi-that-users-service
     restart: always
     init: true
     ports:
@@ -87,11 +87,11 @@ services:
     environment:
       - NODE_ENV=production
       - PORT=3002
-      - DATABASE_URL=mysql://furniture:password@furniture_db:3306/furniture_db
+      - DATABASE_URL=mysql://web_user:web_password@web-ban-noi-that-db:3306/web_db
       - JWT_SECRET=${JWT_SECRET}
       - JWT_REFRESH_SECRET=${JWT_REFRESH_SECRET}
     depends_on:
-      furniture_db:
+      web-ban-noi-that-db:
         condition: service_healthy
     healthcheck:
       test: ['CMD', 'nc', '-z', 'localhost', '3002']
@@ -100,17 +100,17 @@ services:
       start_period: 10s
       retries: 3
     networks:
-      - furniture_network
+      - web-ban-noi-that-network
 
   # =============================================================================
   # Products Microservice
   # =============================================================================
   products-app:
-    image: ${DOCKER_USERNAME:-haongo123}/furniture-products-app:${TAG:-latest}
+    image: ${DOCKER_USERNAME:-haongo123}/web-ban-noi-that-products-service:${TAG:-latest}
     build:
       context: .
       dockerfile: apps/products-app/Dockerfile
-    container_name: furniture_products_service
+    container_name: web-ban-noi-that-products-service
     restart: always
     init: true
     ports:
@@ -118,9 +118,9 @@ services:
     environment:
       - NODE_ENV=production
       - PORT=3001
-      - DATABASE_URL=mysql://furniture:password@furniture_db:3306/furniture_db
+      - DATABASE_URL=mysql://web_user:web_password@web-ban-noi-that-db:3306/web_db
     depends_on:
-      furniture_db:
+      web-ban-noi-that-db:
         condition: service_healthy
     healthcheck:
       test: ['CMD', 'nc', '-z', 'localhost', '3001']
@@ -129,17 +129,17 @@ services:
       start_period: 10s
       retries: 3
     networks:
-      - furniture_network
+      - web-ban-noi-that-network
 
 # =============================================================================
 # Networks
 # =============================================================================
 networks:
-  furniture_network:
+  web-ban-noi-that-network:
     driver: bridge
 
 # =============================================================================
 # Volumes
 # =============================================================================
 volumes:
-  furniture_db_data:
+  web-ban-noi-that-db-data:

@@ -35,7 +35,7 @@ export function WhyChooseUs() {
           viewport={{ once: true }}
           transition={{ duration: 0.5 }}
         >
-          <h2 className="font-serif text-4xl md:text-5xl font-bold text-foreground mb-4">Tại sao chọn Habitat?</h2>
+          <h2 className="font-serif text-4xl md:text-5xl font-bold text-foreground mb-4">Tại sao chọn Nội Thất Việt?</h2>
           <p className="text-muted-foreground max-w-2xl mx-auto leading-relaxed">
             Chúng tôi cam kết mang đến trải nghiệm mua sắm tốt nhất cho khách hàng
           </p>
