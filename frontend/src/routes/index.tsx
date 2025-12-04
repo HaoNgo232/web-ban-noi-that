@@ -52,6 +52,16 @@ const ProfilePage = lazy(() =>
         default: module.ProfilePage,
     })),
 );
+const CollectionsPage = lazy(() =>
+    import("@/features/collections/CollectionsPage").then((module) => ({
+        default: module.CollectionsPage,
+    })),
+);
+const CollectionDetailPage = lazy(() =>
+    import("@/features/collections/CollectionDetailPage").then((module) => ({
+        default: module.CollectionDetailPage,
+    })),
+);
 
 // Loading fallback component
 function PageLoader() {
@@ -152,6 +162,22 @@ const router = createBrowserRouter([
                             <ProfilePage />
                         </LazyPage>
                     </ProtectedRoute>
+                ),
+            },
+            {
+                path: "collections",
+                element: (
+                    <LazyPage>
+                        <CollectionsPage />
+                    </LazyPage>
+                ),
+            },
+            {
+                path: "collections/:slug",
+                element: (
+                    <LazyPage>
+                        <CollectionDetailPage />
+                    </LazyPage>
                 ),
             },
         ],

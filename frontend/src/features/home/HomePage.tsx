@@ -1,7 +1,7 @@
 import { HeroSection } from "./components/HeroSection";
 import { FeaturedProducts } from "./components/FeaturedProducts";
 import { CategoryShowcase } from "./components/CategoryShowcase";
-import { BenefitsSection } from "./components/BenefitsSection";
+import { WhyChooseUs } from "./components/WhyChooseUs";
 import { NewsletterSignup } from "./components/NewsletterSignup";
 import { useProducts } from "../products/hooks/useProducts";
 
@@ -18,13 +18,13 @@ export function HomePage() {
   return (
     <div className="flex flex-col">
       <HeroSection />
-      <CategoryShowcase />
-      <BenefitsSection />
       <FeaturedProducts
         products={featuredProducts}
         isLoading={isLoading}
         error={error || undefined}
       />
+      <CategoryShowcase />
+      <WhyChooseUs />
       <NewsletterSignup />
     </div>
   );
