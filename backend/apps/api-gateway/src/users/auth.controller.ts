@@ -9,7 +9,12 @@ import {
 } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { BaseGatewayController } from '../base.controller';
-import { LoginDto, RefreshTokenDto, AUTH_MESSAGE_PATTERNS } from '@app/dto';
+import {
+  LoginDto,
+  RefreshTokenDto,
+  CreateUserDto,
+  AUTH_MESSAGE_PATTERNS,
+} from '@app/dto';
 import { Public, JwtAuthGuard } from '@app/jwt';
 
 @Controller('auth')
@@ -17,6 +22,17 @@ import { Public, JwtAuthGuard } from '@app/jwt';
 export class AuthController extends BaseGatewayController {
   constructor(@Inject('USERS_SERVICE') protected readonly client: ClientProxy) {
     super(client);
+  }
+
+  /**
+   * Register new user
+   * POST /auth/register
+   */
+  @Public()
+  @Post('register')
+  @HttpCode(HttpStatus.CREATED)
+  register(@Body() createUserDto: CreateUserDto) {
+    return this.send(AUTH_MESSAGE_PATTERNS.REGISTER, createUserDto);
   }
 
   /**

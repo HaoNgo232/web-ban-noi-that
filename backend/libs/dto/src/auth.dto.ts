@@ -76,6 +76,7 @@ export class VerifyTokenResponseDto {
  */
 export const AUTH_MESSAGE_PATTERNS = {
   LOGIN: 'auth.login',
+  REGISTER: 'auth.register',
   REFRESH_TOKEN: 'auth.refreshToken',
   VERIFY_TOKEN: 'auth.verifyToken',
   LOGOUT: 'auth.logout',

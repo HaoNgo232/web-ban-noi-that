@@ -8,6 +8,7 @@ import {
   RefreshTokenDto,
   RefreshTokenResponseDto,
   AppJwtPayload,
+  CreateUserDto,
 } from '@app/dto';
 import * as bcrypt from 'bcrypt';
 import { UsersService } from '../users/users.service';
@@ -21,6 +22,48 @@ export class AuthService {
     private readonly prisma: PrismaService,
     private readonly usersService: UsersService,
   ) {}
+
+  /**
+   * Register user mới và tự động login
+   */
+  async register(createUserDto: CreateUserDto): Promise<AuthResponseDto> {
+    // Tạo user mới
+    const user = await this.usersService.create(createUserDto);
+
+    // Tạo JWT payload
+    const payload: Omit<AppJwtPayload, 'iat' | 'exp'> = {
+      sub: user.id,
+      email: user.email,
+      role: user.role,
+    };
+
+    // Tạo access token và refresh token
+    const accessToken = await this.jwtService.generateAccessToken(payload);
+    const refreshToken = await this.jwtService.generateRefreshToken(payload);
+
+    // Cập nhật lastLoginAt
+    await this.prisma.user.update({
+      where: { id: user.id },
+      data: { lastLoginAt: new Date() },
+    });
+
+    const expiresInSeconds = this.jwtService.getExpiresInSeconds(
+      this.jwtService.getAccessTokenExpiresIn(),
+    );
+
+    return {
+      accessToken,
+      refreshToken,
+      expiresIn: expiresInSeconds,
+      user: {
+        id: user.id,
+        email: user.email,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        role: user.role,
+      },
+    };
+  }
 
   /**
    * Login với email và password

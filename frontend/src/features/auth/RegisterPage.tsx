@@ -5,15 +5,17 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { toast } from "sonner";
 import { useState } from "react";
 import { getErrorMessage } from "@/lib/api-error";
+import { useAuthStore } from "./store/auth.store";
 
 export function RegisterPage() {
     const navigate = useNavigate();
+    const setAuth = useAuthStore((state) => state.setAuth);
     const [isLoading, setIsLoading] = useState(false);
 
     const handleSubmit = async (data: RegisterFormData) => {
         setIsLoading(true);
         try {
-            await authApi.register({
+            const response = await authApi.register({
                 email: data.email,
                 password: data.password,
                 firstName: data.firstName,
@@ -21,8 +23,21 @@ export function RegisterPage() {
                 phone: data.phone || undefined,
             });
 
-            toast.success("Đăng ký thành công! Vui lòng đăng nhập.");
-            navigate("/login");
+            // Tự động login sau khi register thành công
+            setAuth(
+                {
+                    id: response.user.id,
+                    email: response.user.email,
+                    firstName: response.user.firstName,
+                    lastName: response.user.lastName,
+                    role: response.user.role,
+                },
+                response.accessToken,
+                response.refreshToken,
+            );
+
+            toast.success("Đăng ký và đăng nhập thành công!");
+            navigate("/");
         } catch (error: unknown) {
             const errorMessage = getErrorMessage(
                 error,

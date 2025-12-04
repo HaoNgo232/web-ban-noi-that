@@ -30,7 +30,10 @@ class AuthApi {
     lastName: string;
     phone?: string;
   }): Promise<AuthResponse> {
-    const response = await apiClient.post<AuthResponse>("/users", userData);
+    const response = await apiClient.post<AuthResponse>(
+      "/auth/register",
+      userData,
+    );
     return response.data;
   }
 

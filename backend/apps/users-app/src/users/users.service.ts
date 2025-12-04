@@ -23,30 +23,68 @@ export class UsersService {
    * Tạo user mới
    */
   async create(createUserDto: CreateUserDto): Promise<UserResponseDto> {
-    const existingUser = await this.prisma.user.findUnique({
-      where: { email: createUserDto.email },
-    });
+    try {
+      // Hash password trước khi vào transaction
+      const hashedPassword = await bcrypt.hash(
+        createUserDto.password,
+        this.SALT_ROUNDS,
+      );
 
-    if (existingUser) {
+      // Sử dụng transaction để đảm bảo atomicity và tránh race condition
+      const user = await this.prisma.$transaction(async (tx) => {
+        // Kiểm tra email đã tồn tại chưa
+        const existingUser = await tx.user.findUnique({
+          where: { email: createUserDto.email },
+        });
+
+        if (existingUser) {
+          throw new RpcException({
+            statusCode: HttpStatus.CONFLICT,
+            message: 'Email đã được sử dụng',
+          });
+        }
+
+        // Tạo user mới
+        return await tx.user.create({
+          data: {
+            ...createUserDto,
+            password: hashedPassword,
+          },
+        });
+      });
+
+      return this.mapToUserResponse(user);
+    } catch (error) {
+      // Xử lý Prisma unique constraint error (P2002) - race condition
+      if (
+        error instanceof Prisma.PrismaClientKnownRequestError &&
+        error.code === 'P2002'
+      ) {
+        this.logger.warn(
+          `Duplicate email attempt: ${createUserDto.email}`,
+          error.stack,
+        );
+        throw new RpcException({
+          statusCode: HttpStatus.CONFLICT,
+          message: 'Email đã được sử dụng',
+        });
+      }
+
+      // Re-throw RpcException
+      if (error instanceof RpcException) {
+        throw error;
+      }
+
+      // Xử lý các lỗi khác
+      this.logger.error(
+        `Error creating user: ${createUserDto.email}`,
+        error instanceof Error ? error.stack : String(error),
+      );
       throw new RpcException({
-        statusCode: HttpStatus.CONFLICT,
-        message: 'Email đã được sử dụng',
+        statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+        message: 'Lỗi khi tạo tài khoản. Vui lòng thử lại.',
       });
     }
-
-    const hashedPassword = await bcrypt.hash(
-      createUserDto.password,
-      this.SALT_ROUNDS,
-    );
-
-    const user = await this.prisma.user.create({
-      data: {
-        ...createUserDto,
-        password: hashedPassword,
-      },
-    });
-
-    return this.mapToUserResponse(user);
   }
 
   /**

@@ -21,7 +21,7 @@ const loginSchema = z.object({
         .refine((val) => emailRegex.test(val), { message: "Email không hợp lệ" }),
     password: z
         .string({ message: "Mật khẩu là bắt buộc" })
-        .min(6, { message: "Mật khẩu phải có ít nhất 6 ký tự" }),
+        .min(8, { message: "Mật khẩu phải có ít nhất 8 ký tự" }),
 });
 
 export type LoginFormData = z.infer<typeof loginSchema>;

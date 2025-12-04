@@ -22,14 +22,21 @@ const registerSchema = z
             .refine((val) => emailRegex.test(val), { message: "Email không hợp lệ" }),
         password: z
             .string({ message: "Mật khẩu là bắt buộc" })
-            .min(6, { message: "Mật khẩu phải có ít nhất 6 ký tự" }),
+            .min(8, { message: "Mật khẩu phải có ít nhất 8 ký tự" })
+            .regex(
+                /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]/,
+                {
+                    message:
+                        "Mật khẩu phải chứa ít nhất 1 chữ hoa, 1 chữ thường, 1 số và 1 ký tự đặc biệt",
+                }
+            ),
         confirmPassword: z.string({ message: "Xác nhận mật khẩu là bắt buộc" }),
         firstName: z
             .string({ message: "Họ là bắt buộc" })
-            .min(1, { message: "Họ là bắt buộc" }),
+            .min(2, { message: "Họ phải có ít nhất 2 ký tự" }),
         lastName: z
             .string({ message: "Tên là bắt buộc" })
-            .min(1, { message: "Tên là bắt buộc" }),
+            .min(2, { message: "Tên phải có ít nhất 2 ký tự" }),
         phone: z.string().optional(),
     })
     .refine((data) => data.password === data.confirmPassword, {
