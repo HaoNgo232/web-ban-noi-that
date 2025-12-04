@@ -15,11 +15,12 @@ import { useAuthStore } from "@/features/auth/store/auth.store";
 import { Navigation } from "./Navigation";
 
 export function Header() {
-  const totalItems = useCartStore((state) => state.totalItems());
+  const items = useCartStore((state) => state.items);
+  const totalItems = items.reduce((sum, item) => sum + item.quantity, 0);
   const { isAuthenticated, user, logout } = useAuthStore();
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+    <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60">
       <div className="container flex h-16 items-center justify-between">
         {/* Logo */}
         <Link to="/" className="flex items-center space-x-2">

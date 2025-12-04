@@ -3,18 +3,28 @@ import { FeaturedProducts } from "./components/FeaturedProducts";
 import { CategoryShowcase } from "./components/CategoryShowcase";
 import { BenefitsSection } from "./components/BenefitsSection";
 import { NewsletterSignup } from "./components/NewsletterSignup";
+import { useProducts } from "../products/hooks/useProducts";
 
 export function HomePage() {
-  // TODO: Replace with real data from useProducts hook (Task 3.2.3)
-  // For now, using empty array - will be populated when API integration is done
-  const featuredProducts: never[] = [];
+  // Fetch featured products (first 8 products, sorted by createdAt desc)
+  const { data, isLoading, error } = useProducts({
+    limit: 8,
+    sortBy: "createdAt",
+    sortOrder: "desc",
+  });
+
+  const featuredProducts = data?.data || [];
 
   return (
     <div className="flex flex-col">
       <HeroSection />
       <CategoryShowcase />
       <BenefitsSection />
-      <FeaturedProducts products={featuredProducts} isLoading={false} />
+      <FeaturedProducts
+        products={featuredProducts}
+        isLoading={isLoading}
+        error={error || undefined}
+      />
       <NewsletterSignup />
     </div>
   );

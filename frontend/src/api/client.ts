@@ -29,30 +29,50 @@ apiClient.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config;
 
-    if (error.response?.status === 401 && !originalRequest._retry) {
+    if (
+      error.response?.status === 401 &&
+      originalRequest &&
+      !originalRequest._retry
+    ) {
       originalRequest._retry = true;
 
-      try {
-        const refreshToken = useAuthStore.getState().refreshToken;
-        if (refreshToken) {
-          const response = await axios.post(`${API_URL}/auth/refresh`, {
+      const refreshToken = useAuthStore.getState().refreshToken;
+
+      // Try to refresh token if available
+      if (refreshToken) {
+        try {
+          const response = await axios.post<{
+            accessToken: string;
+            refreshToken: string;
+          }>(`${API_URL}/auth/refresh`, {
             refreshToken,
           });
 
+          // Use the new refresh token from response if provided, otherwise keep the old one
+          const newRefreshToken = response.data.refreshToken || refreshToken;
           useAuthStore
             .getState()
-            .setTokens(response.data.accessToken, refreshToken);
+            .setTokens(response.data.accessToken, newRefreshToken);
 
           originalRequest.headers.Authorization = `Bearer ${response.data.accessToken}`;
           return apiClient(originalRequest);
+        } catch (refreshError) {
+          // Refresh failed, logout user
+          console.error("Token refresh failed:", refreshError);
+          useAuthStore.getState().logout();
+          globalThis.location.href = "/login";
+          // Throw the original 401 error to preserve error context
+          throw error;
         }
-      } catch (refreshError) {
+      } else {
+        // No refresh token available, logout user immediately
         useAuthStore.getState().logout();
-        window.location.href = "/login";
+        globalThis.location.href = "/login";
+        // Throw to stop the error chain (redirect will navigate away)
+        throw error;
       }
     }
 
-    return Promise.reject(error);
+    throw error;
   },
 );
-

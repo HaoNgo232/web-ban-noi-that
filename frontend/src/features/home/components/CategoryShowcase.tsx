@@ -2,7 +2,7 @@ import { motion } from "framer-motion";
 import { Link } from "react-router";
 import { Card } from "@/components/ui/card";
 import { ProductCategory } from "@/types/product.types";
-import { Sofa, Table, Chair, Bed, Cabinet, Shelf, Lightbulb, Sparkles } from "lucide-react";
+import { Sofa, Table, Armchair, Bed, Box, Layers, Lightbulb, Sparkles } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const categories = [
@@ -23,7 +23,7 @@ const categories = [
   {
     category: ProductCategory.CHAIR,
     label: "Ghế",
-    icon: Chair,
+    icon: Armchair,
     description: "Ghế văn phòng và ghế ăn",
     color: "from-green-50 to-green-100 dark:from-green-950 dark:to-green-900",
   },
@@ -37,14 +37,14 @@ const categories = [
   {
     category: ProductCategory.CABINET,
     label: "Tủ",
-    icon: Cabinet,
+    icon: Box,
     description: "Tủ quần áo và tủ kệ",
     color: "from-rose-50 to-rose-100 dark:from-rose-950 dark:to-rose-900",
   },
   {
     category: ProductCategory.SHELF,
     label: "Kệ",
-    icon: Shelf,
+    icon: Layers,
     description: "Kệ sách và kệ trang trí",
     color: "from-teal-50 to-teal-100 dark:from-teal-950 dark:to-teal-900",
   },

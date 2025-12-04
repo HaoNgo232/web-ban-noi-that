@@ -10,13 +10,13 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface PaginationProps {
-  currentPage: number;
-  totalPages: number;
-  onPageChange: (page: number) => void;
-  pageSize?: number;
-  onPageSizeChange?: (size: number) => void;
-  pageSizeOptions?: number[];
-  className?: string;
+  readonly currentPage: number;
+  readonly totalPages: number;
+  readonly onPageChange: (page: number) => void;
+  readonly pageSize?: number;
+  readonly onPageSizeChange?: (size: number) => void;
+  readonly pageSizeOptions?: number[];
+  readonly className?: string;
 }
 
 export function Pagination({
@@ -32,11 +32,12 @@ export function Pagination({
   const startPage = Math.max(1, currentPage - 2);
   const endPage = Math.min(totalPages, currentPage + 2);
 
-  const visiblePages = pages.slice(startPage - 1, endPage);
+  // slice uses exclusive end index, so we need endPage + 1 to include endPage
+  const visiblePages = pages.slice(startPage - 1, endPage + 1);
 
   return (
-    <div className={cn("flex items-center justify-between gap-4", className)}>
-      <div className="flex items-center gap-2">
+    <div className={cn("flex flex-col sm:flex-row items-center justify-between gap-4", className)}>
+      <div className="flex items-center gap-2 flex-wrap justify-center">
         <Button
           variant="outline"
           size="icon"
@@ -95,7 +96,7 @@ export function Pagination({
 
       {pageSize && onPageSizeChange && (
         <div className="flex items-center gap-2">
-          <span className="text-sm text-muted-foreground">Hiển thị:</span>
+          <span className="text-sm text-muted-foreground whitespace-nowrap">Hiển thị:</span>
           <Select
             value={pageSize.toString()}
             onValueChange={(value) => onPageSizeChange(Number(value))}

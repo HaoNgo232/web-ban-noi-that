@@ -1,8 +1,8 @@
 import { cn } from "@/lib/utils";
 
 interface LoadingSpinnerProps {
-  className?: string;
-  size?: "sm" | "md" | "lg";
+  readonly className?: string;
+  readonly size?: "sm" | "md" | "lg";
 }
 
 const sizeClasses = {
@@ -19,8 +19,9 @@ export function LoadingSpinner({ className, size = "md" }: LoadingSpinnerProps) 
         sizeClasses[size],
         className,
       )}
-      role="status"
       aria-label="Loading"
+      aria-live="polite"
+      aria-busy="true"
     >
       <span className="sr-only">Loading...</span>
     </div>
