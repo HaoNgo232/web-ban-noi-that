@@ -25,5 +25,6 @@ Chạy container frontend:
 
 - frontend: `docker run -e VITE_API_URL=host-domain.com haongo123/web-ban-noi-that-frontend:latest`
 
-Khi deloy xong, cd vào backend (source code trên máy tính cá nhân) chạy lệnh `npm run db:push` để push schema vào database và
-chạy `npm run db:seed` để seed data
+- Khi deploy xong, cd vào backend (source code trên máy tính cá nhân) chạy lệnh `npm run db:push` để push schema vào database và chạy `npm run db:seed` để seed data đến database server, nhớ cấu hình environment variables trong file `.env` là url của database server đang hosting .
+
+- Kiểm tra kiến trúc của image: docker manifest inspect [image_name] | grep architecture
