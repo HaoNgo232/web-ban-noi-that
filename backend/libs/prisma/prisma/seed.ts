@@ -443,12 +443,14 @@ async function seedUsers(): Promise<void> {
   console.log(`✅ Seeded ${usersData.length} users\n`);
 }
 
-async function seedProducts(): Promise<void> {
+async function seedProducts(): Promise<string[]> {
   console.log('🌱 Seeding products...');
 
   // Clear existing products first
   await prisma.product.deleteMany();
   console.log('  🗑️  Cleared existing products');
+
+  const productIds: string[] = [];
 
   for (const productData of productsData) {
     // Convert images array to JSON string for MySQL
@@ -461,10 +463,85 @@ async function seedProducts(): Promise<void> {
       data: dataToInsert,
     });
 
+    productIds.push(product.id);
     console.log(`  ✅ Created product: ${product.name}`);
   }
 
   console.log(`✅ Seeded ${productsData.length} products\n`);
+  return productIds;
+}
+
+// ==================== COLLECTIONS DATA ====================
+
+const collectionsData = [
+  {
+    name: 'Phong cách Scandinavian',
+    slug: 'phong-cach-scandinavian',
+    description:
+      'Bộ sưu tập lấy cảm hứng từ phong cách Bắc Âu với thiết kế tối giản, màu sắc trung tính và chất liệu tự nhiên. Tạo không gian sống ấm áp, gần gũi và đầy ánh sáng.',
+    image: '/images/scandinavian-living-room-natural-wood.jpg',
+    // Product indices sẽ được map sau khi products được tạo
+    productIndices: [0, 1, 3], // Sofa, Bàn ăn, Tủ sách
+  },
+  {
+    name: 'Hiện đại tối giản',
+    slug: 'hien-dai-toi-gian',
+    description:
+      'Nội thất hiện đại với đường nét gọn gàng, màu sắc đơn sắc và chức năng tối ưu. Phù hợp cho những ai yêu thích sự đơn giản nhưng vẫn sang trọng và tinh tế.',
+    image: '/images/minimalist-modern-living-room-with-neutral-tones-a.jpg',
+    productIndices: [0, 2, 3], // Sofa, Giường, Tủ sách
+  },
+  {
+    name: 'Rustic ấm cúng',
+    slug: 'rustic-am-cung',
+    description:
+      'Mang đến không gian ấm cúng với gỗ tự nhiên, kết cấu thô mộc và tông màu đất. Tạo cảm giác thân thiện, gần gũi với thiên nhiên cho ngôi nhà của bạn.',
+    image: '/images/rustic-wooden-dining-room-cozy-atmosphere.jpg',
+    productIndices: [1, 0], // Bàn ăn, Sofa
+  },
+  {
+    name: 'Không gian làm việc',
+    slug: 'khong-gian-lam-viec',
+    description:
+      'Bộ sưu tập dành riêng cho văn phòng tại nhà với thiết kế ergonomic, giúp tăng năng suất và tạo môi trường làm việc chuyên nghiệp, thoải mái.',
+    image: '/images/minimalist-home-office-workspace.jpg',
+    productIndices: [3], // Tủ sách
+  },
+];
+
+async function seedCollections(productIds: string[]): Promise<void> {
+  console.log('🌱 Seeding collections...');
+
+  // Clear existing collections first
+  await prisma.collectionProduct.deleteMany();
+  await prisma.collection.deleteMany();
+  console.log('  🗑️  Cleared existing collections');
+
+  for (const collectionData of collectionsData) {
+    const { productIndices, ...collectionInfo } = collectionData;
+
+    // Map product indices to actual product IDs
+    const mappedProductIds = productIndices
+      .filter((idx) => idx < productIds.length)
+      .map((idx) => productIds[idx]);
+
+    const collection = await prisma.collection.create({
+      data: {
+        ...collectionInfo,
+        products: {
+          create: mappedProductIds.map((productId) => ({
+            productId,
+          })),
+        },
+      },
+    });
+
+    console.log(
+      `  ✅ Created collection: ${collection.name} (${mappedProductIds.length} products)`,
+    );
+  }
+
+  console.log(`✅ Seeded ${collectionsData.length} collections\n`);
 }
 
 async function main(): Promise<void> {
@@ -477,7 +554,8 @@ async function main(): Promise<void> {
     // console.log('🗑️  Cleared existing data\n');
 
     await seedUsers();
-    await seedProducts();
+    const productIds = await seedProducts();
+    await seedCollections(productIds);
 
     console.log('🎉 Database seeding completed successfully!');
   } catch (error) {

@@ -9,4 +9,3 @@ export interface Collection {
   productCount: number;
   products: Product[];
 }
-

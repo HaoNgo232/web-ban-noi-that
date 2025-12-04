@@ -80,13 +80,13 @@ export function CollectionsContent() {
                 transition={{ duration: 0.5, delay: index * 0.1 }}
               >
                 <Link to={`/collections/${collection.slug}`} className="group block">
-                  <div className="relative aspect-[4/3] overflow-hidden rounded-lg mb-6">
+                  <div className="relative aspect-4/3 overflow-hidden rounded-lg mb-6">
                     <img
                       src={collection.image || "/placeholder.svg"}
                       alt={collection.name}
                       className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
+                    <div className="absolute inset-0 bg-linear-to-t from-black/60 via-black/20 to-transparent" />
                     <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
                       <span className="text-sm font-medium opacity-90">{collection.productCount} sản phẩm</span>
                     </div>
@@ -108,4 +108,5 @@ export function CollectionsContent() {
     </div>
   );
 }
+
 

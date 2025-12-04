@@ -7,4 +7,3 @@ export function useCollections() {
     queryFn: collectionsApi.getCollections,
   });
 }
-

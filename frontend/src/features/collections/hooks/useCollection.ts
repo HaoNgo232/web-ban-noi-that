@@ -7,4 +7,3 @@ export function useCollection(slug: string) {
     queryFn: () => collectionsApi.getCollection(slug),
   });
 }
-

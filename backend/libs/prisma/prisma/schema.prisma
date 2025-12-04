@@ -32,26 +32,6 @@ enum ProductStatus {
 
 // ==================== MODELS ====================
 
-model Product {
-  id                 String          @id @default(uuid())
-  name               String          @db.VarChar(255)
-  description        String          @db.Text
-  price              Decimal         @db.Decimal(12, 2)
-  stock              Int             @default(0)
-  category           ProductCategory
-  status             ProductStatus   @default(ACTIVE)
-  material           String?         @db.VarChar(100)
-  images             String?         @db.LongText // JSON array: ["url1", "url2"]
-  discountPercentage Decimal?        @default(0) @db.Decimal(5, 2)
-  createdAt          DateTime        @default(now())
-  updatedAt          DateTime        @updatedAt
-
-  @@index([category])
-  @@index([status])
-  @@index([name])
-  @@map("products")
-}
-
 enum UserRole {
   ADMIN
   CUSTOMER
@@ -83,4 +63,56 @@ model User {
   @@index([role])
   @@index([status])
   @@map("users")
+}
+
+model Collection {
+  id          String   @id @default(uuid())
+  name        String   @db.VarChar(255)
+  slug        String   @unique @db.VarChar(255)
+  description String   @db.Text
+  image       String   @db.VarChar(500)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  products CollectionProduct[]
+
+  @@index([slug])
+  @@map("collections")
+}
+
+model CollectionProduct {
+  id           String     @id @default(uuid())
+  collectionId String
+  productId    String
+  createdAt    DateTime   @default(now())
+
+  collection Collection @relation(fields: [collectionId], references: [id], onDelete: Cascade)
+  product    Product    @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@unique([collectionId, productId])
+  @@index([collectionId])
+  @@index([productId])
+  @@map("collection_products")
+}
+
+model Product {
+  id                 String          @id @default(uuid())
+  name               String          @db.VarChar(255)
+  description        String          @db.Text
+  price              Decimal         @db.Decimal(12, 2)
+  stock              Int             @default(0)
+  category           ProductCategory
+  status             ProductStatus   @default(ACTIVE)
+  material           String?         @db.VarChar(100)
+  images             String?         @db.LongText // JSON array: ["url1", "url2"]
+  discountPercentage Decimal?        @default(0) @db.Decimal(5, 2)
+  createdAt          DateTime        @default(now())
+  updatedAt          DateTime        @updatedAt
+
+  collections CollectionProduct[]
+
+  @@index([category])
+  @@index([status])
+  @@index([name])
+  @@map("products")
 }

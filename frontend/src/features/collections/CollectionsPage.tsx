@@ -4,3 +4,4 @@ export function CollectionsPage() {
   return <CollectionsContent />;
 }
 
+

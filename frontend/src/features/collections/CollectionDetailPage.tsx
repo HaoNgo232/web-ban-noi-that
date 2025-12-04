@@ -15,3 +15,4 @@ export function CollectionDetailPage() {
   return <CollectionDetailContent slug={slug} />;
 }
 
+

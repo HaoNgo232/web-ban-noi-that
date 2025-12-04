@@ -1,12 +1,19 @@
 import * as dotenv from 'dotenv';
+import * as path from 'path';
 dotenv.config();
 
 import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
+import { NestExpressApplication } from '@nestjs/platform-express';
 import { AppModule } from './app.module';
 
 async function bootstrap(): Promise<void> {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create<NestExpressApplication>(AppModule);
+
+  // Serve static files from public/images directory
+  app.useStaticAssets(path.join(__dirname, '../../public/images'), {
+    prefix: '/images',
+  });
 
   // Enable CORS - Allow all origins (for development)
   app.enableCors({

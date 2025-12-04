@@ -12,4 +12,3 @@ export const collectionsApi = {
     return response.data;
   },
 };
-
