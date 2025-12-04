@@ -54,6 +54,9 @@ COPY --from=builder /app/dist ./dist
 # Copy Prisma generated files
 COPY --from=builder /app/libs/prisma/src/generated ./libs/prisma/src/generated
 
+# Copy public/images directory for static file serving
+COPY public/images ./public/images
+
 RUN chown -R nestjs:nodejs /app
 
 USER nestjs

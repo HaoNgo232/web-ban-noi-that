@@ -21,14 +21,22 @@ export function CollectionsContent() {
   }
 
   if (error) {
+    console.error("Collections error:", error);
     return (
       <div className="container py-16 px-4">
-        <p className="text-center text-muted-foreground">Đã xảy ra lỗi khi tải bộ sưu tập</p>
+        <p className="text-center text-muted-foreground">
+          Đã xảy ra lỗi khi tải bộ sưu tập
+        </p>
+        <p className="text-center text-sm text-muted-foreground mt-2">
+          {error instanceof Error ? error.message : "Vui lòng thử lại sau"}
+        </p>
       </div>
     );
   }
 
   const collections = data || [];
+
+  console.log("collections", collections);
 
   return (
     <div className="min-h-screen">

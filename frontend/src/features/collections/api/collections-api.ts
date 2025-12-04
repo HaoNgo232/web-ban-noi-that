@@ -3,60 +3,114 @@ import { collectionsApi as apiClient } from "@/api/collections.api";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
 
-// Helper function to transform image URL to backend URL
-function transformImageUrl(imagePath: string): string {
-  if (!imagePath) return imagePath;
-  
-  // If already a full URL, return as is
-  if (imagePath.startsWith("http://") || imagePath.startsWith("https://")) {
-    return imagePath;
+/**
+ * Class for managing collections API.
+ */
+export class CollectionsApi {
+  private static transformImageUrl(imagePath: string): string {
+    if (!imagePath) return imagePath;
+
+    // If already a full URL, return as is
+    if (imagePath.startsWith("http://") || imagePath.startsWith("https://")) {
+      return imagePath;
+    }
+
+    // If starts with /images/, it's already correct - just prepend API_URL
+    if (imagePath.startsWith("/images/")) {
+      const fullUrl = `${API_URL}${imagePath}`;
+      console.log(
+        `[CollectionsApi] Transforming image: ${imagePath} -> ${fullUrl}`,
+      );
+      return fullUrl;
+    }
+
+    // If starts with /, prepend /images
+    if (imagePath.startsWith("/")) {
+      const fullUrl = `${API_URL}/images${imagePath}`;
+      console.log(
+        `[CollectionsApi] Transforming image: ${imagePath} -> ${fullUrl}`,
+      );
+      return fullUrl;
+    }
+
+    // Otherwise, prepend /images/
+    const fullUrl = `${API_URL}/images/${imagePath}`;
+    console.log(
+      `[CollectionsApi] Transforming image: ${imagePath} -> ${fullUrl}`,
+    );
+    return fullUrl;
   }
-  
-  // If starts with /images/, it's already correct
-  if (imagePath.startsWith("/images/")) {
-    return `${API_URL}${imagePath}`;
+
+  /**
+   * Transform API response to frontend Collection format.
+   * @param apiCollection Raw collection data from backend
+   */
+  private static transformCollection(apiCollection: any): Collection {
+    console.log(
+      `[CollectionsApi] Transforming collection: ${apiCollection.name}, image: ${apiCollection.image}`,
+    );
+    const transformedImage = CollectionsApi.transformImageUrl(
+      apiCollection.image,
+    );
+    console.log(`[CollectionsApi] Transformed image: ${transformedImage}`);
+
+    const transformedProducts = (apiCollection.products || []).map(
+      (product: any) => ({
+        ...product,
+        images: (product.images || []).map((img: string) =>
+          CollectionsApi.transformImageUrl(img),
+        ),
+      }),
+    );
+
+    return {
+      id: apiCollection.id,
+      name: apiCollection.name,
+      slug: apiCollection.slug,
+      description: apiCollection.description,
+      image: transformedImage,
+      productCount:
+        apiCollection.productCount || transformedProducts.length || 0,
+      products: transformedProducts,
+    };
   }
-  
-  // If starts with /, prepend /images
-  if (imagePath.startsWith("/")) {
-    return `${API_URL}/images${imagePath}`;
+
+  /**
+   * Fetch all collections.
+   * @returns Promise<Collection[]>
+   */
+  static async getCollections(): Promise<Collection[]> {
+    try {
+      const response = await apiClient.getCollections();
+      if (!Array.isArray(response)) {
+        console.error("Unexpected response format:", response);
+        return [];
+      }
+      return response.map(CollectionsApi.transformCollection);
+    } catch (error) {
+      console.error("Error in CollectionsApi.getCollections:", error);
+      throw error;
+    }
   }
-  
-  // Otherwise, prepend /images/
-  return `${API_URL}/images/${imagePath}`;
+
+  /**
+   * Fetch a single collection by slug.
+   * @param slug Collection slug
+   * @returns Promise<Collection>
+   */
+  static async getCollection(slug: string): Promise<Collection> {
+    try {
+      const collection = await apiClient.getCollection(slug);
+      if (!collection) {
+        throw new Error("Collection not found");
+      }
+      return CollectionsApi.transformCollection(collection);
+    } catch (error) {
+      console.error("Error in CollectionsApi.getCollection:", error);
+      throw error;
+    }
+  }
 }
 
-// Helper function to transform API response to frontend format
-function transformCollection(apiCollection: any): Collection {
-  // Transform collection image
-  const transformedImage = transformImageUrl(apiCollection.image);
-  
-  // Transform product images
-  const transformedProducts = (apiCollection.products || []).map((product: any) => ({
-    ...product,
-    images: (product.images || []).map((img: string) => transformImageUrl(img)),
-  }));
-
-  return {
-    id: apiCollection.id,
-    name: apiCollection.name,
-    slug: apiCollection.slug,
-    description: apiCollection.description,
-    image: transformedImage,
-    productCount: apiCollection.productCount || transformedProducts.length || 0,
-    products: transformedProducts,
-  };
-}
-
-export const collectionsApi = {
-  getCollections: async (): Promise<Collection[]> => {
-    const response = await apiClient.getCollections();
-    return response.map(transformCollection);
-  },
-
-  getCollection: async (slug: string): Promise<Collection> => {
-    const collection = await apiClient.getCollection(slug);
-    return transformCollection(collection);
-  },
-};
-
+// Export an instance for compatibility with hook usage or facades if needed
+export const collectionsApi = CollectionsApi;

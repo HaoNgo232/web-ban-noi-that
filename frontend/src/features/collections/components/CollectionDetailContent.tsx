@@ -28,9 +28,15 @@ export function CollectionDetailContent({ slug }: CollectionDetailContentProps) 
   }
 
   if (error || !collection) {
+    console.error("CollectionDetailContent error:", error);
     return (
       <div className="container py-16 px-4">
         <p className="text-center text-muted-foreground">Không tìm thấy bộ sưu tập</p>
+        {error && (
+          <p className="text-center text-sm text-muted-foreground mt-2">
+            {error instanceof Error ? error.message : "Vui lòng thử lại sau"}
+          </p>
+        )}
         <div className="flex justify-center mt-6">
           <Link to="/collections">
             <Button variant="outline">
