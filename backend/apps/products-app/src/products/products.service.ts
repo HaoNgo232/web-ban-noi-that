@@ -252,6 +252,24 @@ export class ProductsService {
   }
 
   /**
+   * Parse và validate JSON images array
+   */
+  private parseImages(imagesJson: string): string[] {
+    try {
+      const parsed = JSON.parse(imagesJson) as unknown;
+      if (
+        Array.isArray(parsed) &&
+        parsed.every((item) => typeof item === 'string')
+      ) {
+        return parsed;
+      }
+      return [];
+    } catch {
+      return [];
+    }
+  }
+
+  /**
    * Convert Prisma Product entity sang DTO
    */
   private toDto(product: Product): GetProductDto {
@@ -264,7 +282,7 @@ export class ProductsService {
       status: product.status as GetProductDto['status'],
       category: product.category as GetProductDto['category'],
       material: product.material ?? undefined,
-      images: product.images ? JSON.parse(product.images) : [],
+      images: product.images ? this.parseImages(product.images) : [],
       discountPercentage: product.discountPercentage?.toNumber(),
       createdAt: product.createdAt,
       updatedAt: product.updatedAt,
