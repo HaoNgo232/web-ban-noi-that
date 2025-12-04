@@ -54,16 +54,16 @@ export function ProductFilters({
                 <div className="space-y-2">
                     <Label>Danh mục</Label>
                     <Select
-                        value={category || ""}
+                        value={category || "all"}
                         onValueChange={(value) =>
-                            onCategoryChange(value ? (value as ProductCategory) : undefined)
+                            onCategoryChange(value === "all" ? undefined : (value as ProductCategory))
                         }
                     >
                         <SelectTrigger>
                             <SelectValue placeholder="Tất cả danh mục" />
                         </SelectTrigger>
                         <SelectContent>
-                            <SelectItem value="">Tất cả danh mục</SelectItem>
+                            <SelectItem value="all">Tất cả danh mục</SelectItem>
                             <SelectItem value={ProductCategory.SOFA}>Sofa</SelectItem>
                             <SelectItem value={ProductCategory.TABLE}>Bàn</SelectItem>
                             <SelectItem value={ProductCategory.CHAIR}>Ghế</SelectItem>

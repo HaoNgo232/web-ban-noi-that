@@ -4,8 +4,8 @@ import { cn } from "@/lib/utils";
 const navItems = [
   { label: "Trang chủ", path: "/" },
   { label: "Sản phẩm", path: "/products" },
-  { label: "Về chúng tôi", path: "/about" },
-  { label: "Liên hệ", path: "/contact" },
+  // { label: "Về chúng tôi", path: "/about" },
+  // { label: "Liên hệ", path: "/contact" },
 ];
 
 export function Navigation() {

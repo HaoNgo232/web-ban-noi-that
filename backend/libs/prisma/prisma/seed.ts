@@ -1,5 +1,5 @@
 import * as dotenv from 'dotenv';
-import * as path from 'path';
+import * as path from 'node:path';
 import * as bcrypt from 'bcrypt';
 
 // Load environment variables FIRST
@@ -84,8 +84,8 @@ const productsData = [
     category: 'SOFA' as const,
     material: 'Da thật, gỗ sồi',
     images: [
-      'https://example.com/sofa-milano-1.jpg',
-      'https://example.com/sofa-milano-2.jpg',
+      'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=800&h=600&fit=crop',
+      'https://images.unsplash.com/photo-1556228453-efd6c1ff04f6?w=800&h=600&fit=crop',
     ],
     discountPercentage: 10,
   },
@@ -97,7 +97,9 @@ const productsData = [
     stock: 25,
     category: 'SOFA' as const,
     material: 'Vải cotton, gỗ tần bì',
-    images: ['https://example.com/sofa-nordic-1.jpg'],
+    images: [
+      'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=800&h=600&fit=crop',
+    ],
     discountPercentage: 5,
   },
   {
@@ -108,7 +110,9 @@ const productsData = [
     stock: 30,
     category: 'SOFA' as const,
     material: 'Da công nghiệp, thép',
-    images: ['https://example.com/sofa-relax-1.jpg'],
+    images: [
+      'https://images.unsplash.com/photo-1567538096630-e0c55bd6374c?w=800&h=600&fit=crop',
+    ],
     discountPercentage: 0,
   },
 
@@ -122,8 +126,8 @@ const productsData = [
     category: 'TABLE' as const,
     material: 'Gỗ óc chó',
     images: [
-      'https://example.com/ban-oc-cho-1.jpg',
-      'https://example.com/ban-oc-cho-2.jpg',
+      'https://images.unsplash.com/photo-1532372320572-cda25653a26d?w=800&h=600&fit=crop',
+      'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=800&h=600&fit=crop',
     ],
     discountPercentage: 15,
   },
@@ -135,7 +139,9 @@ const productsData = [
     stock: 40,
     category: 'TABLE' as const,
     material: 'Kính cường lực, inox',
-    images: ['https://example.com/ban-tra-kinh-1.jpg'],
+    images: [
+      'https://images.unsplash.com/photo-1532372320572-cda25653a26d?w=800&h=600&fit=crop',
+    ],
     discountPercentage: 0,
   },
   {
@@ -146,7 +152,9 @@ const productsData = [
     stock: 50,
     category: 'TABLE' as const,
     material: 'Gỗ MDF, sắt',
-    images: ['https://example.com/ban-lam-viec-1.jpg'],
+    images: [
+      'https://images.unsplash.com/photo-1524758631624-e2822e304c36?w=800&h=600&fit=crop',
+    ],
     discountPercentage: 8,
   },
 
@@ -159,7 +167,9 @@ const productsData = [
     stock: 35,
     category: 'CHAIR' as const,
     material: 'Lưới mesh, nhựa cao cấp',
-    images: ['https://example.com/ghe-ergonomic-1.jpg'],
+    images: [
+      'https://images.unsplash.com/photo-1506439773649-6e0eb8cfb237?w=800&h=600&fit=crop',
+    ],
     discountPercentage: 12,
   },
   {
@@ -170,7 +180,9 @@ const productsData = [
     stock: 60,
     category: 'CHAIR' as const,
     material: 'Gỗ sồi, vải nỉ',
-    images: ['https://example.com/ghe-an-soi-1.jpg'],
+    images: [
+      'https://images.unsplash.com/photo-1506439773649-6e0eb8cfb237?w=800&h=600&fit=crop',
+    ],
     discountPercentage: 0,
   },
   {
@@ -181,7 +193,9 @@ const productsData = [
     stock: 45,
     category: 'CHAIR' as const,
     material: 'Sắt, gỗ thông',
-    images: ['https://example.com/ghe-bar-1.jpg'],
+    images: [
+      'https://images.unsplash.com/photo-1549497538-303791108f95?w=800&h=600&fit=crop',
+    ],
     discountPercentage: 5,
   },
 
@@ -195,8 +209,8 @@ const productsData = [
     category: 'BED' as const,
     material: 'Gỗ sồi Mỹ, da',
     images: [
-      'https://example.com/giuong-soi-1.jpg',
-      'https://example.com/giuong-soi-2.jpg',
+      'https://images.unsplash.com/photo-1631049307264-da0ec9d70304?w=800&h=600&fit=crop',
+      'https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af?w=800&h=600&fit=crop',
     ],
     discountPercentage: 10,
   },
@@ -208,7 +222,9 @@ const productsData = [
     stock: 20,
     category: 'BED' as const,
     material: 'Gỗ thông',
-    images: ['https://example.com/giuong-tang-1.jpg'],
+    images: [
+      'https://images.unsplash.com/photo-1631049307264-da0ec9d70304?w=800&h=600&fit=crop',
+    ],
     discountPercentage: 0,
   },
   {
@@ -219,7 +235,9 @@ const productsData = [
     stock: 28,
     category: 'BED' as const,
     material: 'Gỗ MDF',
-    images: ['https://example.com/giuong-ngan-keo-1.jpg'],
+    images: [
+      'https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af?w=800&h=600&fit=crop',
+    ],
     discountPercentage: 7,
   },
 
@@ -232,7 +250,9 @@ const productsData = [
     stock: 18,
     category: 'CABINET' as const,
     material: 'Gỗ MDF',
-    images: ['https://example.com/tu-quan-ao-1.jpg'],
+    images: [
+      'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=800&h=600&fit=crop',
+    ],
     discountPercentage: 10,
   },
   {
@@ -244,8 +264,8 @@ const productsData = [
     category: 'CABINET' as const,
     material: 'Gỗ Acrylic, inox',
     images: [
-      'https://example.com/tu-bep-1.jpg',
-      'https://example.com/tu-bep-2.jpg',
+      'https://images.unsplash.com/photo-1556912172-45b7abe8b7e1?w=800&h=600&fit=crop',
+      'https://images.unsplash.com/photo-1556912173-6719d0367133?w=800&h=600&fit=crop',
     ],
     discountPercentage: 5,
   },
@@ -257,7 +277,9 @@ const productsData = [
     stock: 35,
     category: 'CABINET' as const,
     material: 'Gỗ công nghiệp',
-    images: ['https://example.com/tu-giay-1.jpg'],
+    images: [
+      'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=800&h=600&fit=crop',
+    ],
     discountPercentage: 0,
   },
 
@@ -270,7 +292,9 @@ const productsData = [
     stock: 40,
     category: 'SHELF' as const,
     material: 'Gỗ cao su',
-    images: ['https://example.com/ke-sach-1.jpg'],
+    images: [
+      'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800&h=600&fit=crop',
+    ],
     discountPercentage: 8,
   },
   {
@@ -281,7 +305,9 @@ const productsData = [
     stock: 55,
     category: 'SHELF' as const,
     material: 'Gỗ MDF veneer',
-    images: ['https://example.com/ke-treo-tuong-1.jpg'],
+    images: [
+      'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800&h=600&fit=crop',
+    ],
     discountPercentage: 0,
   },
   {
@@ -292,7 +318,9 @@ const productsData = [
     stock: 25,
     category: 'SHELF' as const,
     material: 'Gỗ MDF',
-    images: ['https://example.com/ke-tv-1.jpg'],
+    images: [
+      'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800&h=600&fit=crop',
+    ],
     discountPercentage: 12,
   },
 
@@ -305,7 +333,9 @@ const productsData = [
     stock: 10,
     category: 'LIGHTING' as const,
     material: 'Pha lê K9, inox',
-    images: ['https://example.com/den-chum-1.jpg'],
+    images: [
+      'https://images.unsplash.com/photo-1513506003901-1e6a229e2d15?w=800&h=600&fit=crop',
+    ],
     discountPercentage: 15,
   },
   {
@@ -316,7 +346,9 @@ const productsData = [
     stock: 30,
     category: 'LIGHTING' as const,
     material: 'Kim loại mạ đồng',
-    images: ['https://example.com/den-san-1.jpg'],
+    images: [
+      'https://images.unsplash.com/photo-1513506003901-1e6a229e2d15?w=800&h=600&fit=crop',
+    ],
     discountPercentage: 0,
   },
   {
@@ -327,7 +359,9 @@ const productsData = [
     stock: 50,
     category: 'LIGHTING' as const,
     material: 'Nhựa ABS, nhôm',
-    images: ['https://example.com/den-ban-1.jpg'],
+    images: [
+      'https://images.unsplash.com/photo-1513506003901-1e6a229e2d15?w=800&h=600&fit=crop',
+    ],
     discountPercentage: 5,
   },
 
@@ -340,7 +374,9 @@ const productsData = [
     stock: 45,
     category: 'DECORATION' as const,
     material: 'Canvas, gỗ thông',
-    images: ['https://example.com/tranh-canvas-1.jpg'],
+    images: [
+      'https://images.unsplash.com/photo-1541961017774-22349e4a1262?w=800&h=600&fit=crop',
+    ],
     discountPercentage: 0,
   },
   {
@@ -351,7 +387,9 @@ const productsData = [
     stock: 25,
     category: 'DECORATION' as const,
     material: 'Mây, gương Bỉ',
-    images: ['https://example.com/guong-may-1.jpg'],
+    images: [
+      'https://images.unsplash.com/photo-1541961017774-22349e4a1262?w=800&h=600&fit=crop',
+    ],
     discountPercentage: 10,
   },
   {
@@ -362,7 +400,9 @@ const productsData = [
     stock: 60,
     category: 'DECORATION' as const,
     material: 'Gốm sứ',
-    images: ['https://example.com/binh-hoa-1.jpg'],
+    images: [
+      'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=800&h=600&fit=crop',
+    ],
     discountPercentage: 0,
   },
   {
@@ -373,7 +413,9 @@ const productsData = [
     stock: 15,
     category: 'DECORATION' as const,
     material: 'Len tự nhiên',
-    images: ['https://example.com/tham-len-1.jpg'],
+    images: [
+      'https://images.unsplash.com/photo-1541961017774-22349e4a1262?w=800&h=600&fit=crop',
+    ],
     discountPercentage: 8,
   },
 ];
@@ -403,6 +445,10 @@ async function seedUsers(): Promise<void> {
 
 async function seedProducts(): Promise<void> {
   console.log('🌱 Seeding products...');
+
+  // Clear existing products first
+  await prisma.product.deleteMany();
+  console.log('  🗑️  Cleared existing products');
 
   for (const productData of productsData) {
     // Convert images array to JSON string for MySQL
