@@ -8,12 +8,15 @@ services:
     image: ${DOCKER_USERNAME:-haongo123}/web-ban-noi-that-frontend:${TAG:-latest}
     container_name: web-ban-noi-that-frontend
     ports:
-      - "3000:4173"
+      - "4173:4173"
     restart: unless-stopped
     environment:
       - NODE_ENV=production
+      # Runtime environment variables (injected at container start)
+      - VITE_API_URL=${VITE_API_URL:-http://localhost:3000}
+      - VITE_APP_NAME=${VITE_APP_NAME:-Noi That Viet}
     networks:
-      - frontend-network
+      - web-ban-noi-that-network
     healthcheck:
       test:
         [
@@ -30,5 +33,6 @@ services:
       start_period: 40s
 
 networks:
-  frontend-network:
-    driver: bridge
+  web-ban-noi-that-network:
+    name: web-ban-noi-that-network
+    external: true

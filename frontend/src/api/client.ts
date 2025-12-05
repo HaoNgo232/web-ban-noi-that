@@ -1,10 +1,12 @@
 import axios from "axios";
 import { useAuthStore } from "@/features/auth/store/auth.store";
+import { env } from "@/lib/env";
 
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
+// Debug: Kiểm tra API_URL trong client
+console.log("🌐 API Client - API_URL:", env.API_URL);
 
 export const apiClient = axios.create({
-  baseURL: API_URL,
+  baseURL: env.API_URL,
   timeout: 10000,
   headers: {
     "Content-Type": "application/json",
@@ -46,7 +48,7 @@ apiClient.interceptors.response.use(
           const response = await axios.post<{
             accessToken: string;
             refreshToken: string;
-          }>(`${API_URL}/auth/refresh`, {
+          }>(`${env.API_URL}/auth/refresh`, {
             refreshToken,
           });
 

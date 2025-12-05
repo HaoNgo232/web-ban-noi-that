@@ -1,13 +1,14 @@
 import type { Collection } from "@/features/collections/types";
 import { collectionsApi as apiClient } from "@/api/collections.api";
-
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
+import { env } from "@/lib/env";
 
 /**
  * Class for managing collections API.
  */
 export class CollectionsApi {
   private static transformImageUrl(imagePath: string): string {
+    console.log("API_URL:", env.API_URL);
+
     if (!imagePath) return imagePath;
 
     // If already a full URL, return as is
@@ -17,7 +18,7 @@ export class CollectionsApi {
 
     // If starts with /images/, it's already correct - just prepend API_URL
     if (imagePath.startsWith("/images/")) {
-      const fullUrl = `${API_URL}${imagePath}`;
+      const fullUrl = `${env.API_URL}${imagePath}`;
       console.log(
         `[CollectionsApi] Transforming image: ${imagePath} -> ${fullUrl}`,
       );
@@ -26,7 +27,7 @@ export class CollectionsApi {
 
     // If starts with /, prepend /images
     if (imagePath.startsWith("/")) {
-      const fullUrl = `${API_URL}/images${imagePath}`;
+      const fullUrl = `${env.API_URL}/images${imagePath}`;
       console.log(
         `[CollectionsApi] Transforming image: ${imagePath} -> ${fullUrl}`,
       );
@@ -34,7 +35,7 @@ export class CollectionsApi {
     }
 
     // Otherwise, prepend /images/
-    const fullUrl = `${API_URL}/images/${imagePath}`;
+    const fullUrl = `${env.API_URL}/images/${imagePath}`;
     console.log(
       `[CollectionsApi] Transforming image: ${imagePath} -> ${fullUrl}`,
     );
