@@ -1,7 +1,7 @@
 #!/bin/sh
 
 # Generate env-config.js with runtime environment variables
-cat <<EOF > /app/dist/env-config.js
+cat <<EOF > /usr/share/nginx/html/env-config.js
 window.__ENV__ = {
   VITE_API_URL: "${VITE_API_URL:-http://localhost:3000}",
   VITE_APP_NAME: "${VITE_APP_NAME:-Noi That Viet}"

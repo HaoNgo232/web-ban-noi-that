@@ -40,6 +40,7 @@ Các lệnh đã test thành công:
   -e PRODUCTS_SERVICE_PORT=3001 \
   -e USERS_SERVICE_HOST=192.168.1.12 \
   -e USERS_SERVICE_PORT=3002 \
+
   -p 3003:3000 \
   haongo123/web-ban-noi-that-api-gateway
 

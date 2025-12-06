@@ -20,22 +20,13 @@ COPY . .
 RUN pnpm run build
 
 # Stage 2: Production stage
-FROM node:20-alpine
-
-# Set working directory
-WORKDIR /app
-
-# Install pnpm
-RUN npm install -g pnpm
-
-# Copy package files
-COPY package.json pnpm-lock.yaml ./
-
-# Install dependencies (including devDependencies for vite preview)
-RUN pnpm install --frozen-lockfile
+FROM nginx:alpine
 
 # Copy built files from builder stage
-COPY --from=builder /app/dist ./dist
+COPY --from=builder /app/dist /usr/share/nginx/html
+
+# Copy nginx configuration
+COPY nginx.conf /etc/nginx/conf.d/default.conf
 
 # Copy entrypoint script
 COPY docker-entrypoint.sh /docker-entrypoint.sh
@@ -45,10 +36,10 @@ RUN chmod +x /docker-entrypoint.sh
 ENV VITE_API_URL=http://localhost:3000
 ENV VITE_APP_NAME="Noi That Viet"
 
-# Expose port 4173 (vite preview default port)
+# Expose port 80
 EXPOSE 80
 
 # Use entrypoint to inject env vars at runtime
 ENTRYPOINT ["/docker-entrypoint.sh"]
-CMD ["npx", "vite", "preview", "--host", "0.0.0.0", "--port", "80"]
+CMD ["nginx", "-g", "daemon off;"]
 
