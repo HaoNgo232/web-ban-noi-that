@@ -54,8 +54,8 @@ export default defineConfig({
     // Default port for local preview (production uses nginx on port 80)
     port: Number.parseInt(process.env.PREVIEW_PORT || "4173", 10),
     host: true,
-    // Allow all hosts (for production with custom domains)
-    allowedHosts: ["react.luan.van.ctu", "localhost", ".localhost"],
+    // Allow all hosts (match all domains)
+    allowedHosts: ["."],
     // Disable strict host check for flexibility
     strictPort: false,
   },
