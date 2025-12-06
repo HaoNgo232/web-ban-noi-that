@@ -60,11 +60,11 @@ RUN chown -R nestjs:nodejs /app
 USER nestjs
 
 ENV NODE_ENV=production
-ENV PORT=3002
+ENV PORT=3000
 
-EXPOSE 3002
+EXPOSE 3000
 
 HEALTHCHECK --interval=30s --timeout=10s --start-period=10s --retries=3 \
-  CMD nc -z localhost 3002 || exit 1
+  CMD nc -z localhost 3000 || exit 1
 
 CMD ["node", "dist/apps/users-app/main.js"]
